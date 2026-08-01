@@ -5,6 +5,10 @@ class InputProcessor:
     def __init__(self, file_path: str = ""):
         self.file_path = file_path
         self.nb_drones = 0
+        self.start_hub_name = ''
+        self.end_hub_name = ''
+        self.nodes: set[Node] = set()
+        self.edges: list[tuple[str, str, int]] = []
         self.process_file()
 
     def process_file(self):
@@ -22,7 +26,18 @@ class InputProcessor:
                         self.nb_drones = int(s_vals[1])
                     elif "hub" in s_vals[0].lower():
                         hub = self.process_hub(s_vals[1])
-                        print(hub)
+                        if not hub:
+                            continue
+                        self.nodes.add(hub)
+                        if s_vals[0].lower() == 'start_hub':
+                            self.start_hub_name = hub.name
+                        elif s_vals[0].lower() == "end_hub":
+                            self.end_hub_name = hub.name
+                    elif s_vals[0].lower() == "connection":
+                        c_edge = self.process_connect(s_vals[1])
+                        if not c_edge:
+                            continue
+                        self.edges.append(c_edge)
         except Exception as e:
             print(f"Error {e}")
 
@@ -69,3 +84,25 @@ class InputProcessor:
                 hub.z_type = ZoneType.priority
             else:
                 print("Error")
+
+    def process_connect(self, line: str) -> None | tuple[str, str, int]:
+        vals = line.strip().split()
+        if len(vals) < 1 or len(vals) > 2:
+            return None
+        nd_group = vals[0].strip().split('-')
+        if len(nd_group) != 2:
+            print("Error")
+            return None
+        node_a, node_b = nd_group
+        if len(vals) != 2:
+            return node_a, node_b, 1
+        meta_data = (vals[1].strip())[1:-1]
+        if len(meta_data) != 2:
+            print("Error")
+            return None
+        mx_cap = 1
+        try:
+            mx_cap = int(meta_data[1])
+        except Exception as e:
+            print(f"Error {e}")
+        return node_a, node_b, mx_cap
