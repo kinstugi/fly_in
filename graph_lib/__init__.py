@@ -1,6 +1,8 @@
-from .hub import Hub
+from .node import Node
+from .edge import Edge
 
 
 __all__ = [
-    'Hub'
+    'Node',
+    'Edge'
 ]
