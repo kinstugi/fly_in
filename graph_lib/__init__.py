@@ -1,8 +1,9 @@
-from .node import Node
+from .node import Node, ZoneType
 from .edge import Edge
 
 
 __all__ = [
     'Node',
-    'Edge'
+    'Edge',
+    'ZoneType'
 ]

@@ -1,17 +1,18 @@
-from graph_lib import Node
+from graph_lib import Node, ZoneType
 
 
 class InputProcessor:
     def __init__(self, file_path: str = ""):
         self.file_path = file_path
         self.nb_drones = 0
+        self.process_file()
 
     def process_file(self):
         try:
             with open(self.file_path, 'r') as fh:
                 for line in fh:
                     line = line.strip()
-                    if not line:
+                    if not line or line[0] == '#':
                         continue
                     s_vals = line.split(':')
                     if len(s_vals) != 2:
@@ -19,12 +20,15 @@ class InputProcessor:
                         continue
                     if s_vals[0].lower() == "nb_drones":
                         self.nb_drones = int(s_vals[1])
+                    elif "hub" in s_vals[0].lower():
+                        hub = self.process_hub(s_vals[1])
+                        print(hub)
         except Exception as e:
             print(f"Error {e}")
 
     def process_hub(self, line: str) -> Node | None:
         vals = line.strip().split()
-        if not vals or len(vals) < 3:
+        if not vals or len(vals) < 3 or len(vals) > 4:
             return None
         g_name = vals[0]
         try:
@@ -33,4 +37,35 @@ class InputProcessor:
         except Exception as e:
             print(f"Error {e}")
             return None
-        return Node(g_name, g_x, g_y)
+        meta_data = vals[3][1:-1]
+        m_arr = meta_data.split()
+        ret_obj = Node(g_name, g_x, g_y)
+        for item in m_arr:
+            r_arr = item.split('=')
+            if len(r_arr) != 2:
+                print("Error")
+                continue
+            self.handle_hub_metadata(r_arr[0], r_arr[1], ret_obj)
+        return ret_obj
+
+    def handle_hub_metadata(self, key_word: str, value: str, hub: Node):
+        value = value.lower()
+
+        if key_word.lower() == 'color':
+            hub.color = value
+        elif key_word.lower() == 'max_drones':
+            try:
+                hub.max_drones = int(value)
+            except Exception as e:
+                print(f"Error {e}")
+        elif key_word.lower() == 'zone':
+            if value == 'normal':
+                hub.z_type = ZoneType.normal
+            elif value == 'blocked':
+                hub.z_type = ZoneType.blocked
+            elif value == 'restricted':
+                hub.z_type = ZoneType.restricted
+            elif value == 'priority':
+                hub.z_type = ZoneType.priority
+            else:
+                print("Error")

@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Any
 
 
-class Type(Enum):
+class ZoneType(Enum):
     priority = 0
     normal = 1
     blocked = 2
@@ -13,7 +13,7 @@ class Node:
     def __init__(
         self, name: str,
         x: int, y: int,
-        z_type: Type = Type.normal,
+        z_type: ZoneType = ZoneType.normal,
         color: str | None = None,
         max_drones: int = 1
     ):
