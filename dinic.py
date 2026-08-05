@@ -6,27 +6,25 @@ class DinicsMaxFlow:
     def __init__(self, graph: FlowGraph):
         self.graph = graph
 
-    def build_level_graph(self) -> tuple[bool, dict[int, set[Node]] | None]:
+    def build_level_graph(self) -> tuple[bool, dict[Node, int] | None]:
         q = deque([self.graph.source_node])
-        lvl_graph = defaultdict(set)
-        seen: set[Node] = set([self.graph.source_node])
-        level = 0
-        lvl_graph[level].add(self.graph.source_node)
+        lvl_graph: dict[Node, int]  = dict()
+        lvl_graph[self.graph.source_node] = 0
+        terminate = False
 
-        while q:
+        while q and not terminate:
             cnt = len(q)
             for _ in range(cnt):
                 nd = q.popleft()
                 if nd == self.graph.sink_node:
-                    return True, lvl_graph
-                
+                    terminate = True
                 for edge in self.graph.graph[nd]:
-                    if edge.to_node in seen or edge.get_remaining_cap() < 1:
+                    if edge.get_remaining_cap() < 1 or lvl_graph.get(edge.to_node, -1) != -1:
                         continue
-                    seen.add(edge.to_node)
+                    lvl_graph[edge.to_node] = lvl_graph[nd] + 1
                     q.append(edge.to_node)
-                    lvl_graph[level+1].add(edge.to_node)
-            level += 1
+        if terminate:
+            return True, lvl_graph
         return False, None
     
     def find_augment_path(self, lvl_graph: dict[int, set[Edge]]) -> bool:
