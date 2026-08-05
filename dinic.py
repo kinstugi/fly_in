@@ -26,29 +26,36 @@ class DinicsMaxFlow:
         if terminate:
             return True, lvl_graph
         return False, None
-    
-    def find_augment_path(self, lvl_graph: dict[int, set[Edge]]) -> bool:
-        stk = [(self.graph.source_node, 0)]
-        bottle_neck = float('inf')
-        found = False
-        path_taken = []
 
-        while stk:
-            nd, lvl = stk.pop()
-            if nd == self.graph.sink_node:
-                found = True
-                break
-            for edge in self.graph.graph[nd]:
-                if edge.to_node not in lvl_graph[lvl+1] or edge.get_remaining_cap() < 1:
-                    continue
-                stk.append((edge.to_node, lvl+1))
-                bottle_neck = min(bottle_neck, edge.get_remaining_cap())
+    def find_augment_path(self, lvl_graph: dict[Node, int], ptr: dict[Node, int]) -> int:
+        def recur(nd: Node, in_flow: int) -> int:
+            if nd == self.graph.sink_node or in_flow < 1:
+                return in_flow
 
-    def solve(self):
+            edges = self.graph.graph[nd]
+            while ptr[nd] < len(edges):
+                edge = edges[ptr[nd]]
+                if edge.get_remaining_cap() > 0 and lvl_graph.get(nd, -1) + 1 == lvl_graph.get(edge.to_node):
+                    bottleneck = min(in_flow, edge.get_remaining_cap())
+                    pushed = recur(edge.to_node, bottleneck)
+                    if pushed > 0:
+                        edge.augment_path(pushed)
+                        return pushed
+                ptr[nd] += 1
+            return 0
+        return recur(self.graph.source_node, float('inf'))
+
+    def solve(self) -> int:
+        max_flow = 0
         while True:
             has_lvl_graph, lvl_graph = self.build_level_graph()
             if not has_lvl_graph:
                 break
-            did_augment = self.find_augment_path(lvl_graph)
-            if not did_augment:
-                break
+
+            ptr = {nd: 0 for nd in self.graph.graph}
+            while True:
+                pushed = self.find_augment_path(lvl_graph, ptr)
+                if pushed < 1:
+                    break
+                max_flow += pushed
+        return max_flow
