@@ -23,7 +23,6 @@ class Node:
         self.z_type = z_type
         self.color = color
         self.max_drones = max_drones
-        self.neigbors: set[Node] = set()
 
     def __hash__(self):
         return hash(self.name)
