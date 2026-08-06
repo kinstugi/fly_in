@@ -59,3 +59,26 @@ class DinicsMaxFlow:
                     break
                 max_flow += pushed
         return max_flow
+
+    def path_decomposition(self) -> list[list[Edge]]:
+        paths: list[list[Edge]] = []
+        path: list[Edge] = []
+
+        def recur(nd: Node) -> bool:
+            if nd == self.graph.sink_node:
+                paths.append(path[:])
+                return True
+            
+            for edge in self.graph.graph[nd]:
+                if edge.cap < 1:
+                    continue
+                path.append(edge)
+                if recur(edge.to_node):
+                    edge.cap -= 1
+                    return True
+                path.pop()
+            return False
+        
+        while recur(self.graph.source_node):
+            pass
+        return paths
