@@ -1,5 +1,6 @@
 from graph_lib import Edge, FlowGraph, Node
-from collections import deque, defaultdict
+from collections import deque
+import sys
 
 
 class DinicsMaxFlow:
@@ -43,13 +44,13 @@ class DinicsMaxFlow:
                         return pushed
                 ptr[nd] += 1
             return 0
-        return recur(self.graph.source_node, float('inf'))
+        return recur(self.graph.source_node, sys.maxsize)
 
     def solve(self) -> int:
         max_flow = 0
         while True:
             has_lvl_graph, lvl_graph = self.build_level_graph()
-            if not has_lvl_graph:
+            if not has_lvl_graph or not lvl_graph:
                 break
 
             ptr = {nd: 0 for nd in self.graph.graph}
