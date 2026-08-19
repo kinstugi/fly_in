@@ -1,6 +1,6 @@
 from graph_lib import Node
 from enum import Enum
-from typings import Any
+from typing import Any
 
 
 class Role(Enum):
