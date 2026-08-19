@@ -7,9 +7,10 @@ class SolutionEngine:
         self.graph = graph
         self.num_drones = num_drones
 
-    def find_optimal_time(self) -> int:
+    def find_optimal_time(self) -> tuple[int, TEG | None]:
         low, high = 1, 80
-        ans = 0
+        optimal_flow = 0
+        optimal_teg: TEG | None = None
 
         while low <= high:
             mid = (low + high) // 2
@@ -18,8 +19,9 @@ class SolutionEngine:
             max_flow = dinic.get_max_flow()
 
             if max_flow >= self.num_drones:
-                ans = mid
+                optimal_flow = mid
+                optimal_teg = teg
                 high = mid - 1
-            elif max_flow < mid:
+            elif max_flow < self.num_drones:
                 low  = mid + 1
-        return ans
+        return optimal_flow, optimal_teg
