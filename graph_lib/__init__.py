@@ -1,8 +1,9 @@
 from .node import Node, ZoneType
 from .edge import Edge
-from .time_extended_graph import TimeExtenddGraph as TEG
+from .time_extended_graph import TimeExtendedGraph as TEG
 from .static_graph import StaticGraph
-from .teg_node import TEGNode as TNode
+from .teg_node import TEGNode as TNode, Role
+from .teg_edge import TEGEdge as TEdge
 
 
 __all__ = [
@@ -11,5 +12,7 @@ __all__ = [
     'ZoneType',
     'TEG',
     'StaticGraph',
-    'TNode'
+    'TNode',
+    'TEdge',
+    'Role'
 ]
