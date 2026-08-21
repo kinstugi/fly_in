@@ -8,6 +8,7 @@ class TEGEdge:
         self.capacity = max_cap
         self.current_flow = 0
         self.reverse_edge: TEGEdge | None = None
+
     def get_remaining_flow(self):
         return self.capacity - self.current_flow
 
