@@ -21,7 +21,7 @@ class TimeExtendedGraph:
                 u_out_t = TNode(s_node, t, Role.r_out)
 
                 nodes.extend([u_in_t, u_out_t])
-                if s_node == s_graph.sink_node:
+                if s_node == s_graph.sink_node or s_node == s_graph.source_node:
                     edges.append(TEdge(u_in_t, u_out_t, sys.maxsize))
                 else:
                     edges.append(TEdge(u_in_t, u_out_t, u_in_t.node.max_drones))
@@ -36,4 +36,9 @@ class TimeExtendedGraph:
             for t in range(self.turns):
                 from_node = TNode(s_node, t, Role.r_out)
                 to_node = TNode(s_node, t+1, Role.r_in)
-                edges.append(TEdge(from_node, to_node, s_node.max_drones))
+                if s_node == s_graph.source_node:
+                    edges.append(TEdge(from_node, to_node, sys.maxsize))
+                elif s_node == s_graph.sink_node:
+                    pass
+                else:
+                    edges.append(TEdge(from_node, to_node, s_node.max_drones))
