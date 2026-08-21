@@ -23,5 +23,5 @@ class SolutionEngine:
                 optimal_teg = teg
                 high = mid - 1
             elif max_flow < self.num_drones:
-                low  = mid + 1
+                low = mid + 1
         return optimal_time, optimal_teg

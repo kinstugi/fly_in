@@ -16,7 +16,7 @@ class TEGNode:
 
     def __hash__(self) -> int:
         return hash((self.node.name, self.t, self.role))
-    
+
     def __eq__(self, other: Any):
         if isinstance(other, TEGNode):
             return (
