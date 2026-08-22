@@ -1,4 +1,4 @@
-from graph_lib import TNode
+from .teg_node import TEGNode as TNode
 
 
 class TEGEdge:
