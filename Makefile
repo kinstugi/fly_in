@@ -9,7 +9,7 @@ env:
 	./env/bin/pip install --upgrade pip
 
 debug: install
-	./env/bin/python3 -m pdb a_maze_ing.py config.txt
+	./env/bin/python3 -m pdb main.py maps/easy/01_linear_path.txt
 
 clean:
 	rm -rf env
@@ -18,8 +18,8 @@ clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete
 
-lint:
+lint: install
 	./env/bin/flake8 . --exclude=env,build && ./env/bin/mypy . --exclude env --exclude build
 
-lint-strict:
+lint-strict: install
 	./env/bin/flake8 . --exclude=env,build && ./env/bin/mypy . --exclude env --exclude build --strict
