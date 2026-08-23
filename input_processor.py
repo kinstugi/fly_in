@@ -1,4 +1,4 @@
-from graph_lib import Node, ZoneType
+from graph_lib import Node, ZoneType, Edge
 
 
 class InputProcessor:
