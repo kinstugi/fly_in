@@ -7,7 +7,7 @@ class InputProcessor:
         self.nb_drones = 0
         self.start_hub_name = ''
         self.end_hub_name = ''
-        self.nodes: set[Node] = set()
+        self.nodes: dict[str, Node] = dict()
         self.edges: list[tuple[str, str, int]] = []
         self.process_file()
 
@@ -28,7 +28,10 @@ class InputProcessor:
                         hub = self.process_hub(s_vals[1])
                         if not hub:
                             continue
-                        self.nodes.add(hub)
+                        if hub.name in self.nodes:
+                            print("Error")
+                            continue
+                        self.nodes[hub.name] = hub
                         if s_vals[0].lower() == 'start_hub':
                             self.start_hub_name = hub.name
                         elif s_vals[0].lower() == "end_hub":
