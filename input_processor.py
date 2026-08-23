@@ -142,7 +142,10 @@ class InputProcessor:
                 "connections may only reference previously defined hubs",
             )
         if from_name == to_name:
-            self._error(line_number, "a connection cannot connect a hub to itself")
+            self._error(
+                line_number,
+                "a connection cannot connect a hub to itself"
+            )
 
         connection_key = frozenset((from_name, to_name))
         if connection_key in self._connections:
