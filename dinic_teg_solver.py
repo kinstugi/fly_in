@@ -1,4 +1,4 @@
-from graph_lib import TEG, TNode
+from graph_lib import TEG, TNode, TEdge
 from collections import deque
 import sys
 
@@ -32,13 +32,20 @@ class DincTEGSolver:
         return level_graph
 
     def push_flow(self, level_graph: dict[TNode, int], ptr: dict[TNode, int]) -> int:
+        def helper_checker(edge: TEdge, nd: TNode) -> bool:
+            a = level_graph.get(edge.to_node, -1)
+            return (
+                edge.get_remaining_flow() > 0 and
+                a == level_graph.get(nd, -1) + 1
+            )
+
         def recur(nd: TNode, in_flow: int) -> int:
             if nd == self.teg.sink_node or in_flow < 1:
                 return in_flow
             edges = self.teg.graph[nd]
             while ptr[nd] < len(edges):
                 edge = edges[ptr[nd]]
-                if edge.get_remaining_flow() > 0 and level_graph.get(edge.to_node, -1) == level_graph.get(nd, -1) + 1:
+                if helper_checker(edge,  nd):
                     bottle_neck = min(in_flow, edge.get_remaining_flow())
                     pushed = recur(edge.to_node, bottle_neck)
                     if pushed > 0:

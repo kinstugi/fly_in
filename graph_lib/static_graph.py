@@ -8,6 +8,6 @@ class StaticGraph:
         self.source_node = start_node
         self.sink_node = end_node
 
-    def add_connection(self, a: Node, b: Node, cap: int):
+    def add_connection(self, a: Node, b: Node, cap: int) -> None:
         self.graph[a].append(Edge(a, b, cap))
         self.graph[b].append(Edge(b, a, cap))
