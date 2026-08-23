@@ -24,10 +24,10 @@ class Node:
         self.color = color
         self.max_drones = max_drones
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.name)
 
-    def __eq__(self, value: Any):
+    def __eq__(self, value: Any) -> bool:
         if isinstance(value, Node):
             return self.name == value.name
         elif isinstance(value, str):
