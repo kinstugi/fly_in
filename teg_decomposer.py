@@ -1,5 +1,6 @@
 from graph_lib import TEG, TEdge, TNode
 
+
 class TEGDecomposer:
     def __init__(self, graph: TEG, num_drones: int):
         self.teg = graph
@@ -14,7 +15,7 @@ class TEGDecomposer:
                 self.drone_paths.append(drone_path[:])
                 drone_path.clear()
                 return True
-            
+
             edges = self.teg.graph[nd]
             for edge in edges:
                 if edge.current_flow < 1:
@@ -25,7 +26,7 @@ class TEGDecomposer:
                     return True
                 drone_path.pop()
             return False
-        
+
         i = 0
         while recur(self.teg.source_node):
             i += 1

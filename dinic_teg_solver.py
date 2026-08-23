@@ -21,7 +21,10 @@ class DincTEGSolver:
                 if nd == self.teg.sink_node:
                     done = True
                 for edge in self.teg.graph[nd]:
-                    if level_graph.get(edge.to_node, -1) != -1 or edge.get_remaining_flow() < 1:
+                    if (
+                        level_graph.get(edge.to_node, -1) != -1
+                        or edge.get_remaining_flow() < 1
+                    ):
                         continue
                     q.append(edge.to_node)
                     level_graph[edge.to_node] = level_graph[nd] + 1
@@ -31,7 +34,11 @@ class DincTEGSolver:
             return {}
         return level_graph
 
-    def push_flow(self, level_graph: dict[TNode, int], ptr: dict[TNode, int]) -> int:
+    def push_flow(
+        self,
+        level_graph: dict[TNode, int],
+        ptr: dict[TNode, int],
+    ) -> int:
         def helper_checker(edge: TEdge, nd: TNode) -> bool:
             a = level_graph.get(edge.to_node, -1)
             return (
@@ -45,7 +52,7 @@ class DincTEGSolver:
             edges = self.teg.graph[nd]
             while ptr[nd] < len(edges):
                 edge = edges[ptr[nd]]
-                if helper_checker(edge,  nd):
+                if helper_checker(edge, nd):
                     bottle_neck = min(in_flow, edge.get_remaining_flow())
                     pushed = recur(edge.to_node, bottle_neck)
                     if pushed > 0:

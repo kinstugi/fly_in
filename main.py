@@ -35,7 +35,9 @@ if __name__ == "__main__":
     decomp = TEGDecomposer(op_teg, processor.nb_drones)
     drone_paths = decomp.decompose()
     if len(drone_paths) != processor.nb_drones:
-        raise RuntimeError("Flow decomposition did not produce every drone path")
+        raise RuntimeError(
+            "Flow decomposition did not produce every drone path"
+        )
 
     output = OutputFormatter().format(drone_paths, op_time)
     if output:

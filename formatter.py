@@ -5,7 +5,7 @@ class OutputFormatter:
     """Convert decomposed TEG paths into Fly-in turn output."""
 
     def format(self, paths: list[list[TEdge]], turns: int) -> str:
-        """Return one space-separated movement line for each simulation turn."""
+        """Return one movement line for each simulation turn."""
         movements: dict[int, list[str]] = {}
 
         for drone_id, path in enumerate(paths, start=1):

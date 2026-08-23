@@ -58,7 +58,9 @@ class InputProcessor:
         if first_data_line:
             raise ValueError("Input file is empty")
         if not self.start_hub_name or not self.end_hub_name:
-            raise ValueError("Input must contain exactly one start_hub and one end_hub")
+            raise ValueError(
+                "Input must contain exactly one start_hub and one end_hub"
+            )
 
     def _parse_num_drones(self, value: str, line_number: int) -> None:
         if self.nb_drones != 0:
@@ -77,7 +79,10 @@ class InputProcessor:
 
         name, x_value, y_value = parts[:3]
         if "-" in name or not re.fullmatch(r"[^\s:\[\]]+", name):
-            self._error(line_number, "hub names cannot contain spaces, ':' or '-'")
+            self._error(
+                line_number,
+                "hub names cannot contain spaces, ':' or '-'",
+            )
         if name in self.nodes:
             self._error(line_number, f"duplicate hub name '{name}'")
 
@@ -98,7 +103,10 @@ class InputProcessor:
             try:
                 node.z_type = ZoneType[metadata["zone"]]
             except ValueError:
-                self._error(line_number, f"invalid zone type '{metadata['zone']}'")
+                self._error(
+                    line_number,
+                    f"invalid zone type '{metadata['zone']}'",
+                )
         if "color" in metadata:
             node.color = metadata["color"]
         if "max_drones" in metadata:
@@ -122,7 +130,10 @@ class InputProcessor:
         parts = value.split(maxsplit=1)
         connection = parts[0]
         if connection.count("-") != 1:
-            self._error(line_number, "connection must have exactly two hub names")
+            self._error(
+                line_number,
+                "connection must have exactly two hub names",
+            )
 
         from_name, to_name = connection.split("-")
         if from_name not in self.nodes or to_name not in self.nodes:
@@ -159,7 +170,10 @@ class InputProcessor:
         if value is None:
             return {}
         if not (value.startswith("[") and value.endswith("]")):
-            self._error(line_number, "metadata must be enclosed in '[' and ']'")
+            self._error(
+                line_number,
+                "metadata must be enclosed in '[' and ']'",
+            )
 
         content = value[1:-1].strip()
         if not content:
@@ -176,7 +190,10 @@ class InputProcessor:
             if key in metadata:
                 self._error(line_number, f"duplicate metadata key '{key}'")
             if not item_value:
-                self._error(line_number, f"metadata value for '{key}' is empty")
+                self._error(
+                    line_number,
+                    f"metadata value for '{key}' is empty",
+                )
             metadata[key] = item_value.lower() if key == "zone" else item_value
         return metadata
 
