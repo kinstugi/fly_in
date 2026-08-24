@@ -38,7 +38,7 @@ class OutputFormatter:
 
         lines = []
         for turn in range(1, turns + 1):
-            turn_movements = " ".join(movements[turn])
+            turn_movements = " ".join(movements.get(turn, []))
             if visual:
                 if not turn_movements:
                     turn_movements = "waiting"
