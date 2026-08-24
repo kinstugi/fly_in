@@ -9,7 +9,7 @@ from formatter import OutputFormatter
 def main() -> int:
     args = sys.argv
     if len(args) != 2:
-        raise ValueError("run code, `python3 main.py <path_to_file>`")
+        raise ValueError("usage: python3 main.py <path_to_file>")
 
     processor = InputProcessor(args[1])
     start_node = processor.nodes.get(processor.start_hub_name)

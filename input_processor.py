@@ -102,7 +102,7 @@ class InputProcessor:
         if "zone" in metadata:
             try:
                 node.z_type = ZoneType[metadata["zone"]]
-            except ValueError:
+            except KeyError:
                 self._error(
                     line_number,
                     f"invalid zone type '{metadata['zone']}'",
