@@ -6,7 +6,7 @@ from teg_decomposer import TEGDecomposer
 from formatter import OutputFormatter
 
 
-def main() -> None:
+def main() -> int:
     args = sys.argv
     if len(args) != 2:
         raise ValueError("run code, `python3 main.py <path_to_file>`")
@@ -42,10 +42,12 @@ def main() -> None:
     output = OutputFormatter().format(drone_paths, op_time)
     if output:
         print(output)
+    return 0
 
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
