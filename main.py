@@ -6,11 +6,11 @@ from teg_decomposer import TEGDecomposer
 from formatter import OutputFormatter
 
 
-if __name__ == "__main__":
+def main() -> None:
     args = sys.argv
     if len(args) != 2:
-        print("run code, `python3 main.py <path_to_file>`")
-        exit()
+        raise ValueError("run code, `python3 main.py <path_to_file>`")
+
     processor = InputProcessor(args[1])
     start_node = processor.nodes.get(processor.start_hub_name)
     end_node = processor.nodes.get(processor.end_hub_name)
@@ -42,3 +42,10 @@ if __name__ == "__main__":
     output = OutputFormatter().format(drone_paths, op_time)
     if output:
         print(output)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(f"Error: {e}")
