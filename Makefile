@@ -6,7 +6,7 @@ run: install
 	./env/bin/python3 main.py $(MAP)
 
 install: env
-	./env/bin/pip install flake8 mypy
+	./env/bin/pip install flake8 mypy pygame
 
 env:
 	python3 -m venv env

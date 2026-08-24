@@ -4,6 +4,7 @@ from graph_lib import StaticGraph
 from solution_engine import SolutionEngine
 from teg_decomposer import TEGDecomposer
 from formatter import OutputFormatter
+from visualizer import SimVisualizer
 
 
 def main() -> int:
@@ -45,6 +46,9 @@ def main() -> int:
     output = OutputFormatter().format(drone_paths, op_time, visual)
     if output:
         print(output)
+    if visual:
+        sim = SimVisualizer(s_graph, output)
+        sim.run()
     return 0
 
 
