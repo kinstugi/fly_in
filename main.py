@@ -7,11 +7,14 @@ from formatter import OutputFormatter
 
 
 def main() -> int:
-    args = sys.argv
-    if len(args) != 2:
+    args = sys.argv[1:]
+    if len(args) not in [1, 2] or (
+        len(args) == 2 and args[1] != "--visual"
+    ):
         raise ValueError("usage: python3 main.py <path_to_file>")
+    visual = len(args) == 2
 
-    processor = InputProcessor(args[1])
+    processor = InputProcessor(args[0])
     start_node = processor.nodes.get(processor.start_hub_name)
     end_node = processor.nodes.get(processor.end_hub_name)
     if start_node is None or end_node is None:
@@ -39,7 +42,7 @@ def main() -> int:
             "Flow decomposition did not produce every drone path"
         )
 
-    output = OutputFormatter().format(drone_paths, op_time)
+    output = OutputFormatter().format(drone_paths, op_time, visual)
     if output:
         print(output)
     return 0
