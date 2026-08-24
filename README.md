@@ -34,6 +34,12 @@ For example:
 python3 main.py maps/easy/01_linear_path.txt
 ```
 
+For colored outputs add --visual
+
+```bash
+python3 main.py maps/easy/01_linear_path.txt --visual
+```
+
 The program outputs one line per simulation turn. Each movement uses the
 required format:
 

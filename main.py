@@ -11,7 +11,7 @@ def main() -> int:
     if len(args) not in [1, 2] or (
         len(args) == 2 and args[1] != "--visual"
     ):
-        raise ValueError("usage: python3 main.py <path_to_file>")
+        raise ValueError("usage: python3 main.py <path_to_file> [--visual]")
     visual = len(args) == 2
 
     processor = InputProcessor(args[0])
