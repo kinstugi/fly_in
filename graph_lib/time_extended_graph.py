@@ -4,7 +4,7 @@ import sys
 from .edge import Edge
 from .node import Node, ZoneType
 from .static_graph import StaticGraph
-from .teg_edge import TEGEdge
+from .teg_edge import SharedCapacity, TEGEdge
 from .teg_node import Role, TEGNode
 
 
@@ -25,6 +25,9 @@ class TimeExtendedGraph:
     def __init__(self, turns: int, s_graph: StaticGraph):
         self.turns = turns
         self.graph: defaultdict[TEGNode, list[TEGEdge]] = defaultdict(list)
+        self.link_capacity_groups: dict[
+            tuple[frozenset[str], int], SharedCapacity
+        ] = {}
 
         # The source is a real TEG node, not a separate super-source.
         self.source_node = TEGNode(s_graph.source_node, 0, Role.r_in)
@@ -138,21 +141,69 @@ class TimeExtendedGraph:
                 destination_in = TEGNode(destination, arrival_t, Role.r_in)
 
                 self.add_flow_edge(from_t, transit_in, capacity)
-                self.add_flow_edge(transit_in, transit_out, capacity)
+                shared_capacity = self._link_capacity_group(
+                    from_node,
+                    destination,
+                    t + 1,
+                    capacity,
+                )
+                self.add_flow_edge(
+                    transit_in,
+                    transit_out,
+                    capacity,
+                    shared_capacity,
+                )
                 self.add_flow_edge(transit_out, destination_in, capacity)
             else:
                 destination_in = TEGNode(destination, t + 1, Role.r_in)
-                self.add_flow_edge(from_t, destination_in, capacity)
+                shared_capacity = self._link_capacity_group(
+                    from_node,
+                    destination,
+                    t,
+                    capacity,
+                )
+                self.add_flow_edge(
+                    from_t,
+                    destination_in,
+                    capacity,
+                    shared_capacity,
+                )
+
+    def _link_capacity_group(
+        self,
+        from_node: Node,
+        to_node: Node,
+        turn: int,
+        capacity: int,
+    ) -> SharedCapacity:
+        """Return one capacity group for both directions of a link/time."""
+        link = frozenset((from_node.name, to_node.name))
+        key = (link, turn)
+        if key not in self.link_capacity_groups:
+            self.link_capacity_groups[key] = SharedCapacity(capacity)
+        return self.link_capacity_groups[key]
 
     def add_flow_edge(
         self,
         from_node: TEGNode,
         to_node: TEGNode,
         capacity: int,
+        shared_capacity: SharedCapacity | None = None,
     ) -> None:
         """Insert one capacity edge and its zero-capacity residual reverse."""
-        forward_edge = TEGEdge(from_node, to_node, capacity)
-        reverse_edge = TEGEdge(to_node, from_node, 0)
+        forward_edge = TEGEdge(
+            from_node,
+            to_node,
+            capacity,
+            shared_capacity,
+        )
+        reverse_edge = TEGEdge(
+            to_node,
+            from_node,
+            0,
+            shared_capacity,
+            shared_direction=-1,
+        )
 
         forward_edge.reverse_edge = reverse_edge
         reverse_edge.reverse_edge = forward_edge
