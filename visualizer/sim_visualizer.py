@@ -5,6 +5,7 @@ import warnings
 import pygame
 
 from graph_lib import Node, Role, StaticGraph, TEdge, ZoneType
+from .static_node_tracker import StaticGraphStateTracker
 
 
 @dataclass
@@ -36,6 +37,7 @@ class SimVisualizer:
         s_graph: StaticGraph,
         drone_paths: list[list[TEdge]],
         turns: int,
+        show_capacity: bool = True,
     ):
         pygame.init()
         self.screen = pygame.display.set_mode((self._WIDTH, self._HEIGHT))
@@ -54,6 +56,11 @@ class SimVisualizer:
         self.running = True
         self.s_graph = s_graph
         self.turns = turns
+        self.show_capacity = show_capacity
+        self.state_tracker = StaticGraphStateTracker(
+            drone_paths,
+            s_graph,
+        )
         self.elapsed = 0.0
         self.current_turn = 0
         self.positions = self._fit_positions()
@@ -114,6 +121,9 @@ class SimVisualizer:
                     width=2,
                 )
 
+        if self.show_capacity:
+            self._draw_capacity_links()
+
         for node in self.positions:
             pygame.draw.circle(
                 self.screen,
@@ -121,6 +131,8 @@ class SimVisualizer:
                 self.positions[node],
                 self._NODE_RADIUS,
             )
+            if self.show_capacity:
+                self._draw_capacity_zone(node)
             if self.font is not None:
                 label = self.font.render(node.name, True, "white")
                 label_position = (
@@ -128,6 +140,73 @@ class SimVisualizer:
                     self.positions[node][1] + self._NODE_RADIUS + 4,
                 )
                 self.screen.blit(label, label_position)
+
+    def _draw_capacity_links(self) -> None:
+        """Highlight directed links according to current-turn occupancy."""
+        state = self._current_graph_state()
+        for edges in self.s_graph.graph.values():
+            for edge in edges:
+                key = f"link:{edge.from_node.name}-{edge.to_node.name}"
+                occupancy = state.get(key, 0)
+                if occupancy == 0:
+                    continue
+                color = self._capacity_color(
+                    occupancy,
+                    edge.max_link_cap,
+                )
+                pygame.draw.line(
+                    self.screen,
+                    color,
+                    self.positions[edge.from_node],
+                    self.positions[edge.to_node],
+                    width=5,
+                )
+
+    def _draw_capacity_zone(self, node: Node) -> None:
+        """Draw a capacity ring and occupancy label around a zone."""
+        state = self._current_graph_state()
+        occupancy = state.get(f"zone:{node.name}", 0)
+        pygame.draw.circle(
+            self.screen,
+            self._capacity_color(occupancy, node.max_drones),
+            self.positions[node],
+            self._NODE_RADIUS + 4,
+            width=3,
+        )
+        if self.font is None:
+            return
+        capacity = "inf" if node.max_drones > 1000000 else str(node.max_drones)
+        label = self.font.render(
+            f"{occupancy}/{capacity}",
+            True,
+            "white",
+        )
+        self.screen.blit(
+            label,
+            (
+                self.positions[node][0] - label.get_width() / 2,
+                self.positions[node][1] - self._NODE_RADIUS - 22,
+            ),
+        )
+
+    def _current_graph_state(self) -> dict[str, int]:
+        """Return occupancy data for the currently displayed turn."""
+        turn = min(
+            self.current_turn,
+            len(self.state_tracker.state_per_turn) - 1,
+        )
+        return self.state_tracker.state_per_turn[turn]
+
+    @staticmethod
+    def _capacity_color(occupancy: int, capacity: int) -> str:
+        """Map occupancy level to a capacity indicator color."""
+        if capacity > 1000000:
+            return "#f4a261" if occupancy else "#68707c"
+        if occupancy >= capacity:
+            return "#e63946"
+        if occupancy > 0:
+            return "#f4a261"
+        return "#68707c"
 
     def _draw_drones(self) -> None:
         """Draw drones moving smoothly between consecutive turn states."""
@@ -259,6 +338,9 @@ class SimVisualizer:
         if len(parts) != 2 or parts[1] not in self.nodes_by_name:
             raise ValueError(f"Invalid transit node: {transit_name}")
         return self.nodes_by_name[parts[1]]
+
+    def _graph_state_print(self, drone_path: list[list[TEdge]]) -> None:
+        pass
 
     @staticmethod
     def _node_color(node: Node) -> str:
