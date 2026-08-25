@@ -47,7 +47,7 @@ def main() -> int:
     if output:
         print(output)
     if visual:
-        sim = SimVisualizer(s_graph, output)
+        sim = SimVisualizer(s_graph, drone_paths, op_time)
         sim.run()
     return 0
 

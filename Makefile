@@ -1,4 +1,6 @@
 MAP ?= maps/easy/01_linear_path.txt
+UV ?= uv
+PYTHON_VERSION ?= 3.12
 
 .PHONY: run install debug clean lint lint-strict
 
@@ -6,11 +8,15 @@ run: install
 	./env/bin/python3 main.py $(MAP)
 
 install: env
-	./env/bin/pip install flake8 mypy pygame
+	$(UV) pip install --python ./env/bin/python flake8 mypy pygame
 
-env:
-	python3 -m venv env
-	./env/bin/pip install --upgrade pip
+env: env/.uv-python-$(PYTHON_VERSION)
+
+env/.uv-python-$(PYTHON_VERSION):
+	@command -v $(UV) >/dev/null || \
+		(echo "Error: $(UV) is required to create env" >&2; exit 1)
+	$(UV) venv --python $(PYTHON_VERSION) --clear env
+	touch $@
 
 debug: install
 	./env/bin/python3 -m pdb main.py $(MAP)
