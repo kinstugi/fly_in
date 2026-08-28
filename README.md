@@ -159,6 +159,8 @@ extracted flow unit from the network.
 - Cormen, Leiserson, Rivest, and Stein, *Introduction to Algorithms*, chapters
   on maximum flow.
 - The Fly-in project subject and its movement, capacity, and output rules.
+- [Dinic Video explanation](https://youtu.be/M6cm8UeeziI)
+- [Searching with time](https://youtu.be/gUNOdyI0ii0)
 
 AI assistance was used as a review and learning aid for the time-expanded
 graph design, Dinic invariants, flow decomposition, parser validation, and
