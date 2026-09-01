@@ -148,6 +148,7 @@ class SimVisualizer:
             for edge in edges:
                 key = f"link:{edge.from_node.name}-{edge.to_node.name}"
                 occupancy = state.get(key, 0)
+                self._draw_link_label(edge, occupancy)
                 if occupancy == 0:
                     continue
                 color = self._capacity_color(
@@ -161,6 +162,34 @@ class SimVisualizer:
                     self.positions[edge.to_node],
                     width=5,
                 )
+
+    def _draw_link_label(self, edge: Any, occupancy: int) -> None:
+        """Draw directed link occupancy and capacity near the link midpoint."""
+        if self.font is None:
+            return
+        start = self.positions[edge.from_node]
+        end = self.positions[edge.to_node]
+        midpoint = ((start[0] + end[0]) / 2, (start[1] + end[1]) / 2)
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+        length = (dx * dx + dy * dy) ** 0.5
+        offset = (-dy / length * 12, dx / length * 12) if length else (0, 0)
+        capacity = (
+            "inf" if edge.max_link_cap > 1000000
+            else str(edge.max_link_cap)
+        )
+        label = self.font.render(
+            f"{occupancy}/{capacity}",
+            True,
+            "white",
+        )
+        self.screen.blit(
+            label,
+            (
+                midpoint[0] + offset[0] - label.get_width() / 2,
+                midpoint[1] + offset[1] - label.get_height() / 2,
+            ),
+        )
 
     def _draw_capacity_zone(self, node: Node) -> None:
         """Draw a capacity ring and occupancy label around a zone."""
